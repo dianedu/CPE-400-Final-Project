@@ -2,7 +2,11 @@
 
 class Node():
     def __init__(self) -> None:
-        pass
+        self.adjacency_list = []
 
     def __repr__(self) -> str:
+        # to do
+        pass
+
+    def set_adjacency(self, adjacent_nodes : list) -> None:
         pass
