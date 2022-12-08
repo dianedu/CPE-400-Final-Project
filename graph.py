@@ -11,19 +11,19 @@ class Graph():
 
         self.adjacency_matrix = adjacency #list of lists
         for i, neighbors in enumerate(self.adjacency_matrix):
-            for connection in neighbors:
+            for j,connection in enumerate(neighbors):
                 if connection == 1:
-                    self.nodes[i].add_neighbor(self.nodes[connection])
+                    self.nodes[i].add_neighbor(self.nodes[j])
 
     def __repr__(self) -> str:
-        for n in self.nodes:
-            print(n)
+        node = sorted(str(n) for n in self.nodes)
+        return '\n'.join(node)
 
     def breadth_first_search(self) -> None: # hmm maybe better implemented for each node, then nodes have neighbors of node objects?
         pass
 
 # for ease of testing
 if __name__ == "__main__":
-    adj_list = [[0,1,0,0,0],[1,0,0,1,0],[0,0,0,1,0],[0,0,1,0,1],[0,0,0,0,1]]
+    adj_list = [[0,1,0,0,0],[1,0,0,1,0],[0,0,0,1,0],[0,0,1,0,1],[0,0,0,1,0]]
     g = Graph(5, adj_list)
     print(g)
