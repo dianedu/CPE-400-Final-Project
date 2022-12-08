@@ -7,8 +7,7 @@ class Node():
         # dictionary to hold cached routes to each destination router
 
     def __repr__(self) -> str:
-        # might need to modify later
-        return f"{self.label}: {self.adjacency_list}"
+        return f"{self.label}: {[n.get_label() for n in self.adjacency_list]}"
 
     def set_adjacency(self, adjacent_nodes : list) -> None:
         self.adjacency_list = adjacent_nodes
@@ -22,6 +21,10 @@ class Node():
     def get_label(self) -> int:
         return self.label
 
+    def add_neighbor(self, new_neighbor) -> None:
+        self.adjacency_list.append(new_neighbor)
+        self.adjacency_list.sort(key=Node.get_label)
+
     def get_cached_route(self, dest : int) -> list[int]:
         pass
 
@@ -31,13 +34,13 @@ class Node():
 # for ease of testing
 if __name__ == "__main__":
     n1 = Node(1)
-    print(n1)
+    #print(n1)
     n2 = Node(2)
     n3 = Node(3)
     n4 = Node(4)
     n5 = Node(5)
-    n1.set_adjacency([n2,n3,n4,n5])
-    print(n1) # oh, how interesting, each nodes have their neighbors as well... I wonder if it would be better to just have their labels?
     n1_neighbors = [n2,n3,n4,n5]
-    n1.set_adjacency([n.get_label() for n in n1_neighbors]) # list comprehension <3
-    print(n1) # this may be better
+    n1.set_adjacency(n1_neighbors)
+    print(n1) # oh, how interesting, each nodes have their neighbors as well... I wonder if it would be better to just have their labels?
+    #n1.set_adjacency([n.get_label() for n in n1_neighbors]) # list comprehension <3
+    #print(n1) # this may be better
