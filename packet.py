@@ -60,6 +60,32 @@ class RREQ_Packet(Packet):
 
     def add_opt(self, option) -> None:
         self.opt.append(option) #self.opt should be a list to hold all the paths traversed
+        
+# TO DO
+# # Class for RREP packets
+# class RREP_Packet(Packet):
+#     def __init__(self, source: int, destination: int, optional=None) -> None:
+#         super().__init__(source, destination, "RREP", optional)
 
+#     def __repr__(self) -> str:
+#         # to come back to for implementation
+#         # return super().__repr__()
+#         pass
+
+#     #to be continued implemented -- some logistics to figure out here
+
+# TO DO
+# # Class for RERR packets
+# class RERR_Packet(Packet):
+#     def __init__(self, source: int, destination: int, optional=None) -> None:
+#         super().__init__(source, destination, "RERR", optional)
+
+#     def __repr__(self) -> str:
+#         # to come back to for implementation
+#         # return super().__repr__()
+#         pass
+
+#     def get_opt(self) -> None:
+#         print("Error occurred in routing, path to destination does not exist") #temporary
 
 
