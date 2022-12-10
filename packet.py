@@ -46,6 +46,7 @@ class RREQ_Packet(Packet):
         self.id = RREQ_Packet.id_generator
         self.target_address = target
         self.addresses = []
+        RREQ_Packet.generate_new_id()
 
     def __repr__(self) -> str:
         return f"Packet ID: {self.id}\nOriginal source: {self.SRC}\nTarget Destination: {self.target_address}\nHop Limit: {self.hop_limit}"
@@ -105,10 +106,17 @@ class RREQ_Packet(Packet):
 
 # for testing purposes
 if __name__ == "__main__":
-    p1 = RREQ_Packet(0, 50, 4)
-    RREQ_Packet.generate_new_id()
+    p1 = RREQ_Packet(0, 4, 50)
+    #RREQ_Packet.generate_new_id()
     print(p1,"\n")
-    p2 = RREQ_Packet(1, 50, 4)
-    RREQ_Packet.generate_new_id()
-    print(p2)
-    print(type(p2))
+    p2 = RREQ_Packet(2, 4, 50)
+    #RREQ_Packet.generate_new_id()
+    print(p2,"\n")
+    p1.decrease_hop()
+    print(p1,"\n")
+    print(p1.get_traversed_addresses())
+    p1.add_traversed_address(2)
+    print(p1.get_traversed_addresses())
+    p1.add_traversed_address(3)
+    print(p1.get_traversed_addresses())
+    #print(type(p2))

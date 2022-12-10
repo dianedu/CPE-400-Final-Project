@@ -8,6 +8,7 @@ from graph import *
 import node
 from node import *
 
+# I don't think a class is needed for this? Will be a larger main function, maybe can break things up later; this is the test driver code
 # main function for simluation
 if __name__ == "__main__":
     pass

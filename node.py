@@ -13,14 +13,15 @@ class Node():
     def __repr__(self) -> str:
         return f"{self.label}: {[n.get_label() for n in self.adjacency_list]}"
 
-    def set_adjacency(self, adjacent_nodes : list) -> None:
+    def set_adjacency(self, adjacent_nodes : list) -> None: #might not be used, but could be useful
         self.adjacency_list = adjacent_nodes
 
     def get_adjacency(self) -> list:
         return self.adjacency_list
 
-    def set_label(self, name : int) -> None:
-        self.label = name
+    # changing the router's label makes less sense
+    # def set_label(self, name : int) -> None: 
+    #     self.label = name
     
     def get_label(self) -> int:
         return self.label
@@ -29,25 +30,36 @@ class Node():
         self.adjacency_list.append(new_neighbor)
         self.adjacency_list.sort(key=Node.get_label)
 
+    # TO DO: to be implemented once broadcasting works
     def get_cached_route(self, dest : int) -> list[int]:
         pass
 
     def broadcast_packet(self) -> None:
+        # print(f"{self.label} is attempting to broadcast packet: {self.packet}\n")
+        print(f"\n{self.label} is attempting to broadcast packet: {self.packet.get_id()}")
         if self.packet != None:
+            # print(f"{self.packet} is broadcasted to {[n.get_label() for n in self.adjacency_list]}\n")
+            print(f"{self.packet.get_id()} is broadcasted to {[n.get_label() for n in self.adjacency_list]}")
             for node in self.adjacency_list:
-                node.get_packet()
-        # need to test if this works
+                node.get_packet(self.packet)
 
     def create_rreq_packet(self, src : int, dest : int, hop_count : int) -> RREQ_Packet:
         self.packet = RREQ_Packet(src, dest, hop_count)
-        RREQ_Packet.generate_new_id()
+        # print(f"{self.label} has packet:\n{self.packet}\nto send\n")
+        print(f"{self.label} has packet with ID {self.packet.get_id()} to send")
         return self.packet # may not need this return
 
     def get_packet(self, packet : Packet) -> None:
+        # print(f"{self.label} has recieved packet {packet}\n")
+        print(f"\n{self.label} has recieved packet {packet.get_id()}")
         self.packet = packet
+        self.process_packet()
 
     def process_packet(self) -> None:
+        # print(f"{self.label} is processing packet {self.packet}")
+        print(f"{self.label} is processing packet {self.packet.get_id()}")
         if type(self.packet) == RREQ_Packet: #not entirely sure if this will work
+            print(f"Packet of type RREQ is being process by {self.label}")
             self.process_RREQ_packet()
         else:
             self.discard_packet()
@@ -59,20 +71,36 @@ class Node():
         elif self.packet.get_hop_limit == 1:
             self.discard_packet()
         else:
-            #check if packet with same src, dest, and packet id has already came it, if so discard
-            # if not, all to rreq table and append own address to packet
-            #then, broadcast to its neighbors
-            pass
+            packet_info = (self.packet.get_src(), self.packet.get_target_address())
+            if self.is_in_rreq_table(packet_info, self.packet.get_id()):
+                self.discard_packet()
+            self.broadcast_packet()
         
+    # TO DO: Implement after cached route gets implemented
     def accept_packet(self) -> None:
+        print(f"{self.label} accepted packet {self.packet}")
         pass
 
     def discard_packet(self) -> None:
+        print(self.packet, "discarded by", self.label) #not sure how this syntax works, will probably modify
         self.packet = None #hmm not sure if this sufficent since packet is now lost in memory
+
+    # need to test and need potential refactoring
+    def is_in_rreq_table(self, p_info : tuple, p_id :int) -> bool:
+        print(f"Checking to see if packet has been processed by {self.label} previously")
+        if p_info in self.packets_received.keys():
+            if p_id in self.packets_received[p_info]:
+                return True
+            else:
+                self.packets_received[p_info].append(p_id) #issue here
+                return False
+        self.packets_received[p_info] = [p_id] #need to figure out how to make the values a list
+        return False
 
     # method to update dictionary of cached routes
         # recursively get route if successful?
             # how to handle case when unsuccessful?
+
 # for ease of testing
 if __name__ == "__main__":
     n1 = Node(1)
