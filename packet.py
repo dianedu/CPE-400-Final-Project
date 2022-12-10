@@ -56,6 +56,9 @@ class RREQ_Packet(Packet):
     def get_hop_limit(self) -> int:
         return self.hop_limit
 
+    def decrease_hop(self) -> None:
+        self.hop_limit -= 1
+
     def get_id(self) -> int:
         return self.id
 
@@ -108,3 +111,4 @@ if __name__ == "__main__":
     p2 = RREQ_Packet(1, 50, 4)
     RREQ_Packet.generate_new_id()
     print(p2)
+    print(type(p2))

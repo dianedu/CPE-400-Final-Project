@@ -6,7 +6,8 @@ class Node():
     def __init__(self, name : int) -> None: 
         self.label = name # may consider changing to an str type, not entirely sure yet
         self.adjacency_list = [] # may make more sense to store as a set
-        self.packet = None
+        self.packet = None #might need to be a list -> queue of packets
+        self.packets_received = dict()
         # dictionary to hold cached routes to each destination router
 
     def __repr__(self) -> str:
@@ -46,8 +47,28 @@ class Node():
         self.packet = packet
 
     def process_packet(self) -> None:
-        #need to check packet type to know what to do with the packet
+        if type(self.packet) == RREQ_Packet: #not entirely sure if this will work
+            self.process_RREQ_packet()
+        else:
+            self.discard_packet()
+
+    def process_RREQ_packet(self) -> None:
+        self.packet.decrease_hop()
+        if self.packet.get_target_address() == self.label:
+            self.accept_packet()
+        elif self.packet.get_hop_limit == 1:
+            self.discard_packet()
+        else:
+            #check if packet with same src, dest, and packet id has already came it, if so discard
+            # if not, all to rreq table and append own address to packet
+            #then, broadcast to its neighbors
+            pass
+        
+    def accept_packet(self) -> None:
         pass
+
+    def discard_packet(self) -> None:
+        self.packet = None #hmm not sure if this sufficent since packet is now lost in memory
 
     # method to update dictionary of cached routes
         # recursively get route if successful?
