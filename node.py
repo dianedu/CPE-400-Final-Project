@@ -1,9 +1,12 @@
 # Class to create each router and each router's information 
+import packet
+from packet import *
 
 class Node():
     def __init__(self, name : int) -> None: 
         self.label = name # may consider changing to an str type, not entirely sure yet
         self.adjacency_list = [] # may make more sense to store as a set
+        self.packet = None
         # dictionary to hold cached routes to each destination router
 
     def __repr__(self) -> str:
@@ -26,6 +29,24 @@ class Node():
         self.adjacency_list.sort(key=Node.get_label)
 
     def get_cached_route(self, dest : int) -> list[int]:
+        pass
+
+    def broadcast_packet(self) -> None:
+        if self.packet != None:
+            for node in self.adjacency_list:
+                node.get_packet()
+        # need to test if this works
+
+    def create_rreq_packet(self, src : int, dest : int, hop_count : int) -> RREQ_Packet:
+        self.packet = RREQ_Packet(src, dest, hop_count)
+        RREQ_Packet.generate_new_id()
+        return self.packet # may not need this return
+
+    def get_packet(self, packet : Packet) -> None:
+        self.packet = packet
+
+    def process_packet(self) -> None:
+        #need to check packet type to know what to do with the packet
         pass
 
     # method to update dictionary of cached routes

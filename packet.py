@@ -40,7 +40,7 @@ class RREQ_Packet(Packet):
     # def __init__(self, original_source: int, destination: int) -> None:
     #     super().__init__(original_source, destination, "RREQ", [])
     id_generator = 0
-    def __init__(self, source : int, num_hops : int, target : int) -> None:
+    def __init__(self, source : int, target : int, num_hops : int) -> None:
         self.SRC = source
         self.hop_limit = num_hops
         self.id = RREQ_Packet.id_generator
@@ -48,7 +48,7 @@ class RREQ_Packet(Packet):
         self.addresses = []
 
     def __repr__(self) -> str:
-        return f"Packet ID: {self.id}\nOriginal source: {self.SRC}\nTarget Destination: {self.target_address}\nHop Limit: {self.hop_limit}\n"
+        return f"Packet ID: {self.id}\nOriginal source: {self.SRC}\nTarget Destination: {self.target_address}\nHop Limit: {self.hop_limit}"
 
     def get_src(self) -> int:
         return self.SRC
@@ -70,7 +70,7 @@ class RREQ_Packet(Packet):
         return self.addresses
 
     @staticmethod
-    def generate_new_id(self) -> None:
+    def generate_new_id() -> None:
         RREQ_Packet.id_generator += 1
 
 # TO DO
@@ -103,4 +103,8 @@ class RREQ_Packet(Packet):
 # for testing purposes
 if __name__ == "__main__":
     p1 = RREQ_Packet(0, 50, 4)
-    print(p1)
+    RREQ_Packet.generate_new_id()
+    print(p1,"\n")
+    p2 = RREQ_Packet(1, 50, 4)
+    RREQ_Packet.generate_new_id()
+    print(p2)
