@@ -46,7 +46,7 @@ class Node():
             print(f"{self.packet.get_id()} is broadcasted to {[n.get_label() for n in self.adjacency_list]}")
             for node in self.adjacency_list:
                 if node.label not in self.packet.get_traversed_addresses():
-                    self.packet.add_traversed_address(self.label) # add elsewhere
+                    # self.packet.add_traversed_address(self.label) # add elsewhere
                     node.get_packet(copy.deepcopy(self.packet))
 
     # def create_rreq_packet(self, src : int, dest : int, hop_count : int) -> RREQ_Packet:
@@ -83,6 +83,7 @@ class Node():
                 packet_info = (self.packet.get_src(), self.packet.get_target_address())
                 if self.is_in_rreq_table(packet_info, self.packet.get_id()):
                     self.discard_packet()
+                self.packet.add_traversed_address(self.label) #might need to change
                 self.broadcast_packet()
         
     # TO DO: Implement after cached route gets implemented

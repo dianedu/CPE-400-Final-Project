@@ -34,10 +34,10 @@ class Graph():
 
 # for ease of testing
 if __name__ == "__main__":
-    adj_list = [[0,1,0,0,0],
+    adj_list = [[0,1,1,0,0],
                 [1,0,0,1,0],
-                [0,0,0,1,0],
-                [0,0,1,0,1],
+                [1,0,0,1,0],
+                [0,1,1,0,1],
                 [0,0,0,1,0]]
     g = Graph(5, adj_list)
     print(g,"\n")
