@@ -40,16 +40,16 @@ class RREQ_Packet(Packet):
     # def __init__(self, original_source: int, destination: int) -> None:
     #     super().__init__(original_source, destination, "RREQ", [])
     id_generator = 0
-    def __init__(self, source : int, target : int, num_hops : int) -> None:
+    def __init__(self, source : int, target : int, ttl : int) -> None:
         self.SRC = source
-        self.hop_limit = num_hops
+        self.hop_limit = ttl
         self.id = RREQ_Packet.id_generator
         self.target_address = target
         self.addresses = []
         RREQ_Packet.generate_new_id()
 
     def __repr__(self) -> str:
-        return f"Packet ID: {self.id}\nOriginal source: {self.SRC}\nTarget Destination: {self.target_address}\nHop Limit: {self.hop_limit}"
+        return f"RREQ Packet ID: {self.id}\nOriginal source: {self.SRC}\nTarget Destination: {self.target_address}\nHop Limit: {self.hop_limit}"
 
     def get_src(self) -> int:
         return self.SRC
@@ -77,18 +77,44 @@ class RREQ_Packet(Packet):
     def generate_new_id() -> None:
         RREQ_Packet.id_generator += 1
 
-# TO DO
-# # Class for RREP packets
-# class RREP_Packet(Packet):
-#     def __init__(self, source: int, destination: int, optional=None) -> None:
-#         super().__init__(source, destination, "RREP", optional)
+# Class for RREP packets
+class RREP_Packet(Packet):
+    id_generator = 0
+    def __init__(self, source: int, destination: int, ttl : int) -> None:
+        self.src = source
+        self.dest = destination
+        self.hop_limit = ttl
+        self.id = RREP_Packet.id_generator
+        self.addresses = None
+        RREP_Packet.generate_new_id()
 
-#     def __repr__(self) -> str:
-#         # to come back to for implementation
-#         # return super().__repr__()
-#         pass
+    def __repr__(self) -> str:
+       return f"RREP Packet ID: {self.id}\nSource: {self.src}\nDestination: {self.dest}\nHop Limit: {self.hop_limit}"
 
-#     #to be continued implemented -- some logistics to figure out here
+    def get_src(self) -> int:
+        return self.src
+    
+    def get_dest(self) -> int:
+        return self.dest
+    
+    def get_hop_limit(self) -> int:
+        return self.hop_limit
+
+    def decrease_hop(self) -> None:
+        self.hop_limit -= 1
+
+    def get_id(self) -> int:
+        return self.id
+    
+    def get_addresses(self):
+        return self.addresses
+
+    def set_addressses(self, traversed_addressses : list[int]) -> None:
+        self.addresses = traversed_addressses
+
+    @staticmethod
+    def generate_new_id() -> None:
+        RREP_Packet.id_generator += 1
 
 # TO DO
 # # Class for RERR packets
@@ -106,11 +132,10 @@ class RREQ_Packet(Packet):
 
 # for testing purposes
 if __name__ == "__main__":
+    # TESTING RREQ_Packet class and its methods:
     p1 = RREQ_Packet(0, 4, 50)
-    #RREQ_Packet.generate_new_id()
     print(p1,"\n")
     p2 = RREQ_Packet(2, 4, 50)
-    #RREQ_Packet.generate_new_id()
     print(p2,"\n")
     p1.decrease_hop()
     print(p1,"\n")
@@ -120,3 +145,14 @@ if __name__ == "__main__":
     p1.add_traversed_address(3)
     print(p1.get_traversed_addresses())
     #print(type(p2))
+
+    #TESTING RREP_Packet class and its methods:
+    p3 = RREP_Packet(4, 0, 50)
+    print(p3,"\n")
+    p4 = RREP_Packet(4, 2, 50)
+    print(p4,"\n")
+    p3.decrease_hop()
+    print(p3,"\n")
+    print(p4.get_addresses())
+    p4.set_addressses([4,1,2,0])
+    print(p4.get_addresses())
