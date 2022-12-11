@@ -1,6 +1,7 @@
 # Class to create each router and each router's information 
 import packet
 from packet import *
+import copy
 
 class Node():
     def __init__(self, name : int) -> None: 
@@ -26,6 +27,9 @@ class Node():
     def get_label(self) -> int:
         return self.label
 
+    def get_packets_recieved(self) -> dict:
+        return self.packets_received
+
     def add_neighbor(self, new_neighbor) -> None:
         self.adjacency_list.append(new_neighbor)
         self.adjacency_list.sort(key=Node.get_label)
@@ -35,25 +39,27 @@ class Node():
         pass
 
     def broadcast_packet(self) -> None:
-        # print(f"{self.label} is attempting to broadcast packet: {self.packet}\n")
-        print(f"\n{self.label} is attempting to broadcast packet: {self.packet.get_id()}")
         if self.packet != None:
+            # print(f"{self.label} is attempting to broadcast packet: {self.packet}\n")
+            print(f"\n{self.label} is attempting to broadcast packet: {self.packet.get_id()}")
             # print(f"{self.packet} is broadcasted to {[n.get_label() for n in self.adjacency_list]}\n")
             print(f"{self.packet.get_id()} is broadcasted to {[n.get_label() for n in self.adjacency_list]}")
             for node in self.adjacency_list:
-                node.get_packet(self.packet)
+                node.get_packet(copy.deepcopy(self.packet))
 
-    def create_rreq_packet(self, src : int, dest : int, hop_count : int) -> RREQ_Packet:
-        self.packet = RREQ_Packet(src, dest, hop_count)
-        # print(f"{self.label} has packet:\n{self.packet}\nto send\n")
-        print(f"{self.label} has packet with ID {self.packet.get_id()} to send")
-        return self.packet # may not need this return
+    # def create_rreq_packet(self, src : int, dest : int, hop_count : int) -> RREQ_Packet:
+    #     self.packet = RREQ_Packet(src, dest, hop_count)
+    #     # print(f"{self.label} has packet:\n{self.packet}\nto send\n")
+    #     print(f"{self.label} has packet with ID {self.packet.get_id()} to send")
+    #     return self.packet # may not need this return
 
     def get_packet(self, packet : Packet) -> None:
-        # print(f"{self.label} has recieved packet {packet}\n")
-        print(f"\n{self.label} has recieved packet {packet.get_id()}")
-        self.packet = packet
-        self.process_packet()
+        print(f"Got to the get_packet() for {self.label}")
+        if packet != None:
+            # print(f"{self.label} has recieved packet {packet}\n")
+            print(f"\n{self.label} has recieved packet {packet.get_id()}")
+            self.packet = packet
+            self.process_packet()
 
     def process_packet(self) -> None:
         # print(f"{self.label} is processing packet {self.packet}")
@@ -65,16 +71,17 @@ class Node():
             self.discard_packet()
 
     def process_RREQ_packet(self) -> None:
-        self.packet.decrease_hop()
-        if self.packet.get_target_address() == self.label:
-            self.accept_packet()
-        elif self.packet.get_hop_limit == 1:
-            self.discard_packet()
-        else:
-            packet_info = (self.packet.get_src(), self.packet.get_target_address())
-            if self.is_in_rreq_table(packet_info, self.packet.get_id()):
+        if self.packet != None:
+            self.packet.decrease_hop()
+            if self.packet.get_target_address() == self.label:
+                self.accept_packet()
+            elif self.packet.get_hop_limit == 1:
                 self.discard_packet()
-            self.broadcast_packet()
+            else:
+                packet_info = (self.packet.get_src(), self.packet.get_target_address())
+                if self.is_in_rreq_table(packet_info, self.packet.get_id()):
+                    self.discard_packet()
+                self.broadcast_packet()
         
     # TO DO: Implement after cached route gets implemented
     def accept_packet(self) -> None:
@@ -92,7 +99,7 @@ class Node():
             if p_id in self.packets_received[p_info]:
                 return True
             else:
-                self.packets_received[p_info].append(p_id) #issue here
+                self.packets_received[p_info].append(p_id) # potential issue here
                 return False
         self.packets_received[p_info] = [p_id] #need to figure out how to make the values a list
         return False

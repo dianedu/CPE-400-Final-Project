@@ -42,6 +42,6 @@ if __name__ == "__main__":
     g = Graph(5, adj_list)
     print(g,"\n")
 
-    g.get_nodes()[0].create_rreq_packet(0, 4, 50)
-    g.get_nodes()[0].broadcast_packet()
+    packet1 = RREQ_Packet(0, 4, 50)
+    g.get_nodes()[0].get_packet(packet1)
     #now need to process all the packets in the neighbors of 0 and so on
