@@ -45,7 +45,9 @@ class Node():
             # print(f"{self.packet} is broadcasted to {[n.get_label() for n in self.adjacency_list]}\n")
             print(f"{self.packet.get_id()} is broadcasted to {[n.get_label() for n in self.adjacency_list]}")
             for node in self.adjacency_list:
-                node.get_packet(copy.deepcopy(self.packet))
+                if node.label not in self.packet.get_traversed_addresses():
+                    self.packet.add_traversed_address(self.label) # add elsewhere
+                    node.get_packet(copy.deepcopy(self.packet))
 
     # def create_rreq_packet(self, src : int, dest : int, hop_count : int) -> RREQ_Packet:
     #     self.packet = RREQ_Packet(src, dest, hop_count)
@@ -58,7 +60,7 @@ class Node():
         if packet != None:
             # print(f"{self.label} has recieved packet {packet}\n")
             print(f"\n{self.label} has recieved packet {packet.get_id()}")
-            self.packet = packet
+            self.packet = copy.deepcopy(packet)
             self.process_packet()
 
     def process_packet(self) -> None:
@@ -85,11 +87,12 @@ class Node():
         
     # TO DO: Implement after cached route gets implemented
     def accept_packet(self) -> None:
-        print(f"{self.label} accepted packet {self.packet}")
+        print(f"{self.label} accepted packet {self.packet.get_id()}")
+        print(self.packet.get_traversed_addresses())
         pass
 
     def discard_packet(self) -> None:
-        print(self.packet, "discarded by", self.label) #not sure how this syntax works, will probably modify
+        print(f"Packet with id {self.packet.get_id()} is discarded by {self.label}")
         self.packet = None #hmm not sure if this sufficent since packet is now lost in memory
 
     # need to test and need potential refactoring

@@ -43,5 +43,5 @@ if __name__ == "__main__":
     print(g,"\n")
 
     packet1 = RREQ_Packet(0, 4, 50)
-    g.get_nodes()[0].get_packet(packet1)
+    g.get_nodes()[0].get_packet(copy.deepcopy(packet1))
     #now need to process all the packets in the neighbors of 0 and so on
