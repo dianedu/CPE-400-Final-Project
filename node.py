@@ -60,7 +60,7 @@ class Node():
         if packet != None:
             # print(f"{self.label} has recieved packet {packet}\n")
             print(f"\n{self.label} has recieved packet {packet.get_id()}")
-            self.packet = copy.deepcopy(packet)
+            self.packet = packet
             self.process_packet()
 
     def process_packet(self) -> None:
@@ -83,8 +83,9 @@ class Node():
                 packet_info = (self.packet.get_src(), self.packet.get_target_address())
                 if self.is_in_rreq_table(packet_info, self.packet.get_id()):
                     self.discard_packet()
-                self.packet.add_traversed_address(self.label) #might need to change
-                self.broadcast_packet()
+                else:
+                    self.packet.add_traversed_address(self.label) #might need to change
+                    self.broadcast_packet()
         
     # TO DO: Implement after cached route gets implemented
     def accept_packet(self) -> None:

@@ -34,14 +34,17 @@ class Graph():
 
 # for ease of testing
 if __name__ == "__main__":
-    adj_list = [[0,1,1,0,0],
-                [1,0,0,1,0],
-                [1,0,0,1,0],
-                [0,1,1,0,1],
-                [0,0,0,1,0]]
-    g = Graph(5, adj_list)
-    print(g,"\n")
-
-    packet1 = RREQ_Packet(0, 4, 50)
-    g.get_nodes()[0].get_packet(copy.deepcopy(packet1))
-    #now need to process all the packets in the neighbors of 0 and so on
+    adj_list2 = [[0,1,1,0,0,0,0,0,0,0],
+                    [1,0,0,0,1,0,0,0,0,0],
+                    [1,0,0,1,0,0,0,0,0,0],
+                    [0,0,1,0,0,1,0,0,0,0],
+                    [0,1,0,0,0,1,0,0,0,0],
+                    [0,0,0,1,1,0,1,1,0,0],
+                    [0,0,0,0,0,1,0,0,1,0],
+                    [0,0,0,0,0,1,0,0,0,1],
+                    [0,0,0,0,0,0,1,0,0,1],
+                    [0,0,0,0,0,0,0,1,1,0]]
+    g2 = Graph(10,adj_list2)
+    print(g2,"\n")
+    packet2 = RREQ_Packet(1,9,50)
+    g2.get_nodes()[1].get_packet(copy.deepcopy(packet2))
