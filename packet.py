@@ -50,6 +50,14 @@ class RREQ_Packet(Packet):
 
     def __repr__(self) -> str:
         return f"RREQ Packet ID: {self.id}\nOriginal source: {self.SRC}\nTarget Destination: {self.target_address}\nHop Limit: {self.hop_limit}"
+    
+    def __eq__(self, p : Packet) -> bool:
+        if p == None:
+            return False
+        elif self.id == p.id:
+            return True
+        else:
+            return False
 
     def get_src(self) -> int:
         return self.SRC

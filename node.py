@@ -19,10 +19,6 @@ class Node():
 
     def get_adjacency(self) -> list:
         return self.adjacency_list
-
-    # changing the router's label makes less sense
-    # def set_label(self, name : int) -> None: 
-    #     self.label = name
     
     def get_label(self) -> int:
         return self.label
@@ -38,64 +34,64 @@ class Node():
     def get_cached_route(self, dest : int) -> list[int]:
         pass
 
-    def broadcast_packet(self) -> None:
-        if self.packet != None:
+    def broadcast_packet(self, packet : Packet) -> None:
+        if packet != None:
             # print(f"{self.label} is attempting to broadcast packet: {self.packet}\n")
-            print(f"\n{self.label} is attempting to broadcast packet: {self.packet.get_id()}")
+            print(f"\n{self.label} is attempting to broadcast packet: {packet.get_id()}")
             # print(f"{self.packet} is broadcasted to {[n.get_label() for n in self.adjacency_list]}\n")
-            print(f"{self.packet.get_id()} is broadcasted to {[n.get_label() for n in self.adjacency_list]}")
+            print(f"{packet.get_id()} is broadcasted to {[n.get_label() for n in self.adjacency_list]}")
             for node in self.adjacency_list:
-                if node.label not in self.packet.get_traversed_addresses():
+                if node.label not in packet.get_traversed_addresses():
                     # self.packet.add_traversed_address(self.label) # add elsewhere
-                    node.get_packet(copy.deepcopy(self.packet))
-
-    # def create_rreq_packet(self, src : int, dest : int, hop_count : int) -> RREQ_Packet:
-    #     self.packet = RREQ_Packet(src, dest, hop_count)
-    #     # print(f"{self.label} has packet:\n{self.packet}\nto send\n")
-    #     print(f"{self.label} has packet with ID {self.packet.get_id()} to send")
-    #     return self.packet # may not need this return
+                    node.get_packet(copy.deepcopy(packet))
 
     def get_packet(self, packet : Packet) -> None:
         print(f"Got to the get_packet() for {self.label}")
         if packet != None:
             # print(f"{self.label} has recieved packet {packet}\n")
             print(f"\n{self.label} has recieved packet {packet.get_id()}")
-            self.packet = packet
-            self.process_packet()
+            self.process_packet(packet)
 
-    def process_packet(self) -> None:
+    def process_packet(self, packet: Packet) -> None:
         # print(f"{self.label} is processing packet {self.packet}")
-        print(f"{self.label} is processing packet {self.packet.get_id()}")
-        if type(self.packet) == RREQ_Packet: #not entirely sure if this will work
+        print(f"{self.label} is processing packet {packet.get_id()}")
+        if type(packet) == RREQ_Packet:
             print(f"Packet of type RREQ is being process by {self.label}")
-            self.process_RREQ_packet()
+            self.process_RREQ_packet(packet)
+        if type(packet) == RREP_Packet:
+            pass
         else:
-            self.discard_packet()
+            self.discard_packet(packet)
 
-    def process_RREQ_packet(self) -> None:
-        if self.packet != None:
-            self.packet.decrease_hop()
-            if self.packet.get_target_address() == self.label:
-                self.accept_packet()
-            elif self.packet.get_hop_limit == 1:
-                self.discard_packet()
+    def process_RREQ_packet(self, packet : RREQ_Packet) -> None:
+        if packet != None:
+            packet.decrease_hop()
+            if packet.get_target_address() == self.label:
+                self.accept_RREQ_packet(packet)
+            elif packet.get_hop_limit == 1:
+                self.discard_packet(packet)
             else:
-                packet_info = (self.packet.get_src(), self.packet.get_target_address())
-                if self.is_in_rreq_table(packet_info, self.packet.get_id()):
-                    self.discard_packet()
+                packet_info = (packet.get_src(), packet.get_target_address())
+                if self.is_in_rreq_table(packet_info, packet.get_id()):
+                    self.discard_packet(packet)
                 else:
-                    self.packet.add_traversed_address(self.label) #might need to change
-                    self.broadcast_packet()
+                    packet.add_traversed_address(self.label) #might need to change
+                    #self.packet = packet #need to put this somewhere.... hmm maybe only upon acceptance? and broadcast also takes in a packet
+                    self.broadcast_packet(packet)
         
     # TO DO: Implement after cached route gets implemented
-    def accept_packet(self) -> None:
-        print(f"{self.label} accepted packet {self.packet.get_id()}")
-        print(self.packet.get_traversed_addresses())
-        pass
+    def accept_RREQ_packet(self, packet : Packet) -> None:
+        if not packet == self.packet:
+            self.packet = packet
+            print(f"{self.label} accepted packet {self.packet.get_id()}")
+            print(self.packet.get_traversed_addresses())
+        # otherwise a duplicate
+        else:
+            self.discard_packet(packet)
 
-    def discard_packet(self) -> None:
-        print(f"Packet with id {self.packet.get_id()} is discarded by {self.label}")
-        self.packet = None #hmm not sure if this sufficent since packet is now lost in memory
+    def discard_packet(self, packet : Packet) -> None:
+        print(f"Packet with id {packet.get_id()} is discarded by {self.label}")
+        packet = None #hmm not sure if this sufficent since packet is now lost in memory
 
     # need to test and need potential refactoring
     def is_in_rreq_table(self, p_info : tuple, p_id :int) -> bool:
@@ -123,6 +119,4 @@ if __name__ == "__main__":
     n5 = Node(5)
     n1_neighbors = [n2,n3,n4,n5]
     n1.set_adjacency(n1_neighbors)
-    print(n1) # oh, how interesting, each nodes have their neighbors as well... I wonder if it would be better to just have their labels?
-    #n1.set_adjacency([n.get_label() for n in n1_neighbors]) # list comprehension <3
-    #print(n1) # this may be better
+    print(n1)
