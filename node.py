@@ -53,6 +53,7 @@ class Node():
             self.process_packet(packet)
 
     def process_packet(self, packet: Packet) -> None:
+        # print(f"got here 1 {type(packet)}")
         # print(f"{self.label} is processing packet {self.packet}")
         print(f"{self.label} is processing packet {packet.get_id()}")
         if type(packet) == RREQ_Packet:
@@ -60,8 +61,9 @@ class Node():
             self.process_RREQ_packet(packet)
         if type(packet) == RREP_Packet:
             pass
-        else:
-            self.discard_packet(packet)
+        # else:
+        #     print(f"got here {type(packet)}")
+        #     self.discard_packet(packet)
 
     def process_RREQ_packet(self, packet : RREQ_Packet) -> None:
         if packet != None:
@@ -73,7 +75,7 @@ class Node():
             else:
                 packet_info = (packet.get_src(), packet.get_target_address())
                 if self.is_in_rreq_table(packet_info, packet.get_id()):
-                    self.discard_packet(packet)
+                   self.discard_packet(packet)
                 else:
                     packet.add_traversed_address(self.label) #might need to change
                     #self.packet = packet #need to put this somewhere.... hmm maybe only upon acceptance? and broadcast also takes in a packet
@@ -81,7 +83,7 @@ class Node():
         
     # TO DO: Implement after cached route gets implemented
     def accept_RREQ_packet(self, packet : Packet) -> None:
-        if not packet == self.packet:
+        if not self.packet == packet:
             self.packet = packet
             print(f"{self.label} accepted packet {self.packet.get_id()}")
             print(self.packet.get_traversed_addresses())
