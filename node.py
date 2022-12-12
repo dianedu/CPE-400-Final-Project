@@ -87,6 +87,9 @@ class Node():
             self.packet = packet
             print(f"{self.label} accepted packet {self.packet.get_id()}")
             print(self.packet.get_traversed_addresses())
+            print("Sending a RREP packet back\n")
+            rrep_packet = RREP_Packet(self.label, self.packet.get_src(), 50)
+            rrep_packet.set_addressses(self.packet.get_traversed_addresses())
         # otherwise a duplicate
         else:
             self.discard_packet(packet)
@@ -102,9 +105,9 @@ class Node():
             if p_id in self.packets_received[p_info]:
                 return True
             else:
-                self.packets_received[p_info].append(p_id) # potential issue here
+                self.packets_received[p_info].append(p_id)
                 return False
-        self.packets_received[p_info] = [p_id] #need to figure out how to make the values a list
+        self.packets_received[p_info] = [p_id]
         return False
 
     # method to update dictionary of cached routes
