@@ -37,25 +37,25 @@ class Node():
     def broadcast_packet(self, packet : Packet) -> None:
         if packet != None:
             # print(f"{self.label} is attempting to broadcast packet: {self.packet}\n")
-            print(f"\n{self.label} is attempting to broadcast packet: {packet.get_id()}")
+            # print(f"\n{self.label} is attempting to broadcast packet: {packet.get_id()}")
             # print(f"{self.packet} is broadcasted to {[n.get_label() for n in self.adjacency_list]}\n")
-            print(f"{packet.get_id()} is broadcasted to {[n.get_label() for n in self.adjacency_list]}")
+            print(f"RREQ Packet {packet.get_id()} is broadcasted to {[n.get_label() for n in self.adjacency_list]}\n")
             for node in self.adjacency_list:
                 if node.label not in packet.get_traversed_addresses():
                     # self.packet.add_traversed_address(self.label) # add elsewhere
                     node.get_packet(copy.deepcopy(packet))
 
     def get_packet(self, packet : Packet) -> None:
-        print(f"Got to the get_packet() for {self.label}")
+        print(f"{self.label} has received packet {packet.get_id()}")
         if packet != None:
             # print(f"{self.label} has recieved packet {packet}\n")
-            print(f"\n{self.label} has recieved packet {packet.get_id()}")
+            # print(f"\n{self.label} has recieved packet {packet.get_id()}")
             self.process_packet(packet)
 
     def process_packet(self, packet: Packet) -> None:
         # print(f"got here 1 {type(packet)}")
         # print(f"{self.label} is processing packet {self.packet}")
-        print(f"{self.label} is processing packet {packet.get_id()}")
+        # # print(f"{self.label} is processing packet {packet.get_id()}")
         if type(packet) == RREQ_Packet:
             print(f"Packet of type RREQ is being process by {self.label}")
             self.process_RREQ_packet(packet)
@@ -104,7 +104,7 @@ class Node():
 
     # need to test and need potential refactoring
     def is_in_rreq_table(self, p_info : tuple, p_id :int) -> bool:
-        print(f"Checking to see if packet has been processed by {self.label} previously")
+        # print(f"Checking to see if packet has been processed by {self.label} previously")
         if p_info in self.packets_received.keys():
             if p_id in self.packets_received[p_info]:
                 return True
@@ -124,7 +124,7 @@ class Node():
         self.get_neighbor_node_from_label(destination).get_packet(packet)
 
     def process_RREP_packet(self, packet : RREP_Packet) -> None:
-        print(f"Packet {packet.get_id()} is being processed by {self.label}")
+        # print(f"RREP Packet {packet.get_id()} is being processed by {self.label}")
         if packet.get_dest() == self.label:
             self.accept_RREP_packet(packet)
         #other processing and maybe hop count
@@ -132,7 +132,7 @@ class Node():
             self.send_RREP_packet(packet)
 
     def accept_RREP_packet(self, packet : Packet):
-        print(f"{self.label} accepted RREP packet with id: {packet.get_id()}")
+        print(f"{self.label} accepted RREP packet with id: {packet.get_id()}\n")
         pass
 
     def get_neighbor_node_from_label(self, label : int):
