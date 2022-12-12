@@ -60,7 +60,7 @@ class Node():
             print(f"Packet of type RREQ is being process by {self.label}")
             self.process_RREQ_packet(packet)
         if type(packet) == RREP_Packet:
-            pass
+            self.process_RREP_packet(packet)
         # else:
         #     print(f"got here {type(packet)}")
         #     self.discard_packet(packet)
@@ -87,9 +87,13 @@ class Node():
             self.packet = packet
             print(f"{self.label} accepted packet {self.packet.get_id()}")
             print(self.packet.get_traversed_addresses())
+            # might only do if it is a RREQ packet, oh wait..
             print("Sending a RREP packet back\n")
             rrep_packet = RREP_Packet(self.label, self.packet.get_src(), 50)
+            # print(f"Traversed addresses: {self.packet.get_traversed_addresses()}")
             rrep_packet.set_addressses(self.packet.get_traversed_addresses())
+            rrep_packet.set_route(self.packet.get_traversed_addresses())
+            self.send_RREP_packet(rrep_packet)
         # otherwise a duplicate
         else:
             self.discard_packet(packet)
@@ -109,6 +113,32 @@ class Node():
                 return False
         self.packets_received[p_info] = [p_id]
         return False
+
+    def send_RREP_packet(self, packet : Packet) -> None:
+        destination = packet.get_route()[-1]
+        # print(f"get specfic destination {destination}")
+        # modified_route = packet.get_route().pop(-1)
+        # packet.set_route(modified_route)
+        packet.get_route().pop(-1)
+        print(f"RREP Packet {packet.get_id()} is being sent from {self.label} to {destination}")
+        self.get_neighbor_node_from_label(destination).get_packet(packet)
+
+    def process_RREP_packet(self, packet : RREP_Packet) -> None:
+        print(f"Packet {packet.get_id()} is being processed by {self.label}")
+        if packet.get_dest() == self.label:
+            self.accept_RREP_packet(packet)
+        #other processing and maybe hop count
+        else:
+            self.send_RREP_packet(packet)
+
+    def accept_RREP_packet(self, packet : Packet):
+        print(f"{self.label} accepted RREP packet with id: {packet.get_id()}")
+        pass
+
+    def get_neighbor_node_from_label(self, label : int):
+        for node in self.adjacency_list:
+            if label == node.get_label():
+                return node
 
     # method to update dictionary of cached routes
         # recursively get route if successful?

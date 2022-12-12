@@ -94,6 +94,7 @@ class RREP_Packet(Packet):
         self.hop_limit = ttl
         self.id = RREP_Packet.id_generator
         self.addresses = None
+        self.route = None
         RREP_Packet.generate_new_id()
 
     def __repr__(self) -> str:
@@ -114,11 +115,17 @@ class RREP_Packet(Packet):
     def get_id(self) -> int:
         return self.id
     
-    def get_addresses(self):
+    def get_addresses(self) -> list[int]:
         return self.addresses
 
     def set_addressses(self, traversed_addressses : list[int]) -> None:
         self.addresses = traversed_addressses
+
+    def get_route(self) -> list[int]:
+        return self.route
+
+    def set_route(self, traversed_addresses : list[int]) -> None:
+        self.route = traversed_addresses
 
     @staticmethod
     def generate_new_id() -> None:
@@ -164,3 +171,5 @@ if __name__ == "__main__":
     print(p4.get_addresses())
     p4.set_addressses([4,1,2,0])
     print(p4.get_addresses())
+    p4.set_route([4,1,2,0])
+    print(p4.get_route())
