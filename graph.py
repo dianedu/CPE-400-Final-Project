@@ -4,10 +4,10 @@ from node import *
 
 #hmmm dictionary data structure may be useful for look up
 class Graph():
-    def __init__(self, num_nodes : int, adjacency : list[list[int]]) -> None:
+    def __init__(self, num_nodes : int, adjacency : list[list[int]], probability_failure : float) -> None:
         self.nodes = []
         for i in range(num_nodes):
-            self.nodes.append(Node(i))
+            self.nodes.append(Node(i, probability_failure))
 
         self.adjacency_matrix = adjacency #list of lists
         for i, neighbors in enumerate(self.adjacency_matrix):
@@ -40,12 +40,13 @@ if __name__ == "__main__":
                 [1,0,0,1,0],
                 [0,1,1,0,1],
                 [0,0,0,1,0]]
-    g1 = Graph(5, adj_list1)
+    g1 = Graph(5, adj_list1, 0.1)
     print(g1,"\n")
 
     packet1 = RREQ_Packet(0, 4, 50)
     g1.get_nodes()[0].get_packet(packet1)
     # print(g1.get_nodes()[0].get_cached_route(4))
-    print("\n")
+    # print("\n")
     cache_packet1 = RREQ_Packet(0, 4, 50)
     g1.get_nodes()[0].get_packet(cache_packet1)
+    # print(g1.get_nodes()[0].get_prob_link_failure())

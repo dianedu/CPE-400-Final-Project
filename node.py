@@ -2,14 +2,16 @@
 import packet
 from packet import *
 import copy
+import random
 
 class Node():
-    def __init__(self, name : int) -> None: 
+    def __init__(self, name : int, prob_failure : float) -> None: 
         self.label = name # may consider changing to an str type, not entirely sure yet
         self.adjacency_list = [] # may make more sense to store as a set
         self.packet = None #might need to be a list -> queue of packets
         self.packets_received = dict()
         self.cached_routes = dict()
+        self.prob_link_failure = prob_failure
 
     def __repr__(self) -> str:
         return f"{self.label}: {[n.get_label() for n in self.adjacency_list]}"
@@ -22,6 +24,12 @@ class Node():
     
     def get_label(self) -> int:
         return self.label
+    
+    def get_prob_link_failure(self) -> float:
+        return self.prob_link_failure
+
+    def set_prob_link_failure(self, probability : float) -> None:
+        self.prob_link_failure = probability
 
     def get_packets_recieved(self) -> dict:
         return self.packets_received
@@ -39,14 +47,14 @@ class Node():
             # print(f"{self.label} is attempting to broadcast packet: {self.packet}\n")
             # print(f"\n{self.label} is attempting to broadcast packet: {packet.get_id()}")
             # print(f"{self.packet} is broadcasted to {[n.get_label() for n in self.adjacency_list]}\n")
-            print(f"RREQ Packet {packet.get_id()} is broadcasted to {[n.get_label() for n in self.adjacency_list]}\n")
+            # print(f"RREQ Packet {packet.get_id()} is broadcasted to {[n.get_label() for n in self.adjacency_list]}\n")
             for node in self.adjacency_list:
                 if node.label not in packet.get_traversed_addresses():
                     # self.packet.add_traversed_address(self.label) # add elsewhere
                     node.get_packet(copy.deepcopy(packet))
 
     def get_packet(self, packet : Packet) -> None:
-        print(f"{self.label} has received packet {packet.get_id()}")
+        # print(f"{self.label} has received packet {packet.get_id()}")
         if packet != None:
             # print(f"{self.label} has recieved packet {packet}\n")
             # print(f"\n{self.label} has recieved packet {packet.get_id()}")
@@ -64,7 +72,7 @@ class Node():
         # print(f"{self.label} is processing packet {self.packet}")
         # # print(f"{self.label} is processing packet {packet.get_id()}")
         if type(packet) == RREQ_Packet:
-            print(f"Packet of type RREQ is being process by {self.label}")
+            # print(f"Packet of type RREQ is being process by {self.label}")
             self.process_RREQ_packet(packet)
         elif type(packet) == RREP_Packet:
             self.process_RREP_packet(packet)
@@ -94,10 +102,9 @@ class Node():
     def accept_RREQ_packet(self, packet : Packet) -> None:
         if not self.packet == packet:
             self.packet = packet
-            print(f"{self.label} accepted packet {self.packet.get_id()}")
+            # print(f"{self.label} accepted packet {self.packet.get_id()}")
             # print(self.packet.get_traversed_addresses())
-            # might only do if it is a RREQ packet, oh wait..
-            print(f"{self.label} is sending a RREP packet back\n")
+            # print(f"{self.label} is sending a RREP packet back\n")
             rrep_packet = RREP_Packet(self.label, self.packet.get_src(), 50)
             # print(f"Traversed addresses: {self.packet.get_traversed_addresses()}")
             rrep_packet.set_addresses(copy.deepcopy(self.packet.get_traversed_addresses()))
@@ -108,8 +115,8 @@ class Node():
             self.discard_packet(packet)
 
     def discard_packet(self, packet : Packet) -> None:
-        print(f"Packet with id {packet.get_id()} is discarded by {self.label}")
-        packet = None #hmm not sure if this sufficent since packet is now lost in memory
+        # print(f"Packet with id {packet.get_id()} is discarded by {self.label}")
+        packet = None
 
     # need to test and need potential refactoring
     def is_in_rreq_table(self, p_info : tuple, p_id :int) -> bool:
@@ -130,7 +137,7 @@ class Node():
         # modified_route = packet.get_route().pop(-1)
         # packet.set_route(modified_route)
         packet.get_route().pop(-1)
-        print(f"RREP Packet {packet.get_id()} is being sent from {self.label} to {destination}")
+        # print(f"RREP Packet {packet.get_id()} is being sent from {self.label} to {destination}")
         self.get_neighbor_node_from_label(destination).get_packet(packet)
 
     def process_RREP_packet(self, packet : RREP_Packet) -> None:
@@ -142,7 +149,7 @@ class Node():
             self.send_RREP_packet(packet)
 
     def accept_RREP_packet(self, packet : RREP_Packet):
-        print(f"{self.label} accepted RREP packet with id: {packet.get_id()}\n")
+        # print(f"{self.label} accepted RREP packet with id: {packet.get_id()}\n")
         # print(f"Packet src: {packet.get_src()} and the packet addresses {packet.get_addresses()}")
         packet.get_addresses().pop(0)
         packet.get_addresses().append(packet.get_src())
@@ -157,21 +164,23 @@ class Node():
         return Data_Packet(packet.get_src(), packet.get_dest(), packet.get_hop_limit())
 
     def process_Data_packet(self, packet : Data_Packet) -> None:
-        print(f"{self.label} is processing Data Packet {packet.get_id()}")
+        # print(f"{self.label} is processing Data Packet {packet.get_id()}")
         if packet.get_dest() == self.label:
             self.accept_Data_packet(packet)
         else:
-            next_hop_router = packet.get_route().pop(0)
-            print(f"next hop router in data packet sending: {next_hop_router}")
-            self.get_neighbor_node_from_label(next_hop_router).get_packet(packet)
+            chance_fail = random.random()
+            # print(f"Chance fail: {chance_fail} and the link failure rate {self.prob_link_failure}")
+            if chance_fail > self.prob_link_failure: #packet transmitted successfully
+                next_hop_router = packet.get_route().pop(0)
+                # print(f"next hop router in data packet sending: {next_hop_router}")
+                self.get_neighbor_node_from_label(next_hop_router).get_packet(packet)
+            else:
+                print("ERROR link is broken and packet is unable to be transmitted")
+                #need to trigger a failure count
 
     def accept_Data_packet(self, packet : Data_Packet) -> None:
         print(f"{self.label} accepted Data Packet {packet.get_id()}")
-        pass
-
-    # method to update dictionary of cached routes
-        # recursively get route if successful?
-            # how to handle case when unsuccessful?
+        # need to trigger a success count
 
 # for ease of testing
 if __name__ == "__main__":
@@ -184,3 +193,7 @@ if __name__ == "__main__":
     n1_neighbors = [n2,n3,n4,n5]
     n1.set_adjacency(n1_neighbors)
     print(n1)
+
+    print("Testing random number generator")
+    print(random.random())
+    print(random.random())
