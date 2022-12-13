@@ -10,7 +10,6 @@ class Packet(ABC):
         self.type = pack_type
         self.opt = optional
 
-    #not sure how this is going to work
     @abstractmethod
     def __repr__(self) -> str:
         pass
@@ -27,18 +26,8 @@ class Packet(ABC):
     def get_pack_type(self) -> str:
         return self.type
 
-    # @abstractmethod
-    # def get_opt(self) -> None:
-    #     pass
-
-    # @abstractmethod
-    # def set_opt(self, option=None) -> None:
-    #     pass
-
 # Class for RREQ packets
 class RREQ_Packet(Packet):
-    # def __init__(self, original_source: int, destination: int) -> None:
-    #     super().__init__(original_source, destination, "RREQ", [])
     id_generator = 0
     def __init__(self, source : int, target : int, ttl : int) -> None:
         self.SRC = source
@@ -51,6 +40,7 @@ class RREQ_Packet(Packet):
     def __repr__(self) -> str:
         return f"RREQ Packet ID: {self.id}\nOriginal source: {self.SRC}\nTarget Destination: {self.dest}\nHop Limit: {self.hop_limit}"
     
+    #Method to check if two RREQ packets are equal
     def __eq__(self, p : Packet) -> bool:
         if p == None:
             return False
@@ -131,20 +121,7 @@ class RREP_Packet(Packet):
     def generate_new_id() -> None:
         RREP_Packet.id_generator += 1
 
-# TO DO
-# # Class for RERR packets
-# class RERR_Packet(Packet):
-#     def __init__(self, source: int, destination: int, optional=None) -> None:
-#         super().__init__(source, destination, "RERR", optional)
-
-#     def __repr__(self) -> str:
-#         # to come back to for implementation
-#         # return super().__repr__()
-#         pass
-
-#     def get_opt(self) -> None:
-#         print("Error occurred in routing, path to destination does not exist") #temporary
-
+#Class for Data_Packets to help with transmission via cached route
 class Data_Packet(Packet):
     id_generator = 0
     def __init__(self, source: int, destination: int, ttl : int) -> None:

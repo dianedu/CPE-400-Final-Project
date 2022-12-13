@@ -2,14 +2,15 @@
 import node
 from node import *
 
-#hmmm dictionary data structure may be useful for look up
 class Graph():
+    # The Graph constructor takes in the number of nodes in the network, how the nodes are connected, and the probability of failure for each link
+    # The Nodes in the network are created in the Graph constructor
     def __init__(self, num_nodes : int, adjacency : list[list[int]], probability_failure : float) -> None:
         self.nodes = []
         for i in range(num_nodes):
             self.nodes.append(Node(i, probability_failure))
 
-        self.adjacency_matrix = adjacency #list of lists
+        self.adjacency_matrix = adjacency
         for i, neighbors in enumerate(self.adjacency_matrix):
             for j,connection in enumerate(neighbors):
                 if connection == 1:
@@ -24,13 +25,6 @@ class Graph():
 
     def get_adjacency_matric(self) -> list[list[int]]:
         return self.adjacency_matrix
-
-    def change_adjaceny_matrix(self, matix : list[list[int]]):
-        pass
-
-    # this may be done by the broadcast method, which does bfs implicitly
-    # def breadth_first_search(self) -> None: # hmm maybe better implemented for each node, then nodes have neighbors of node objects?
-    #     pass
 
 # for ease of testing
 if __name__ == "__main__":
