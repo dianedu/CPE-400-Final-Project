@@ -4,6 +4,9 @@ from packet import *
 import copy
 import random
 
+Successes = 0
+Failures = 0
+
 class Node():
     def __init__(self, name : int, prob_failure : float) -> None: 
         self.label = name # may consider changing to an str type, not entirely sure yet
@@ -65,7 +68,7 @@ class Node():
                     # print(f"Data Packet {packet}")
                     packet.set_route(self.cached_routes[packet.get_dest()])
                     # print(f"Data Packet route {packet.get_route()}")
-            self.process_packet(packet)
+            self.process_packet(copy.deepcopy(packet))
 
     def process_packet(self, packet: Packet) -> None:
         # print(f"got here 1 {type(packet)}")
@@ -163,24 +166,34 @@ class Node():
     def convert_RREQ_to_Data_packet(self, packet : RREQ_Packet) -> Packet:
         return Data_Packet(packet.get_src(), packet.get_dest(), packet.get_hop_limit())
 
-    def process_Data_packet(self, packet : Data_Packet) -> None:
+    def process_Data_packet(self, packet : Data_Packet) -> bool:
         # print(f"{self.label} is processing Data Packet {packet.get_id()}")
         if packet.get_dest() == self.label:
             self.accept_Data_packet(packet)
         else:
             chance_fail = random.random()
             # print(f"Chance fail: {chance_fail} and the link failure rate {self.prob_link_failure}")
+            next_hop_router = packet.get_route().pop(0)
             if chance_fail > self.prob_link_failure: #packet transmitted successfully
-                next_hop_router = packet.get_route().pop(0)
                 # print(f"next hop router in data packet sending: {next_hop_router}")
                 self.get_neighbor_node_from_label(next_hop_router).get_packet(packet)
             else:
-                print("ERROR link is broken and packet is unable to be transmitted")
-                #need to trigger a failure count
+                # MIGHT UNCOMMENT OUT # print("ERROR link is broken and packet is unable to be transmitted")
+                print(f"Link from {self.label} to {next_hop_router} is broken")
+                global Failures
+                Failures += 1
 
-    def accept_Data_packet(self, packet : Data_Packet) -> None:
-        print(f"{self.label} accepted Data Packet {packet.get_id()}")
-        # need to trigger a success count
+    def accept_Data_packet(self, packet : Data_Packet) -> bool:
+        # print(f"{self.label} accepted Data Packet {packet.get_id()}")
+        print(f"Packet is successfully transmitted")
+        global Successes
+        Successes += 1
+
+def get_num_successes() -> int:
+    return Successes
+
+def get_num_failures() -> int:
+    return Failures
 
 # for ease of testing
 if __name__ == "__main__":
