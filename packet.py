@@ -49,7 +49,7 @@ class RREQ_Packet(Packet):
         RREQ_Packet.generate_new_id()
 
     def __repr__(self) -> str:
-        return f"RREQ Packet ID: {self.id}\nOriginal source: {self.SRC}\nTarget Destination: {self.target_address}\nHop Limit: {self.hop_limit}"
+        return f"RREQ Packet ID: {self.id}\nOriginal source: {self.SRC}\nTarget Destination: {self.dest}\nHop Limit: {self.hop_limit}"
     
     def __eq__(self, p : Packet) -> bool:
         if p == None:
@@ -98,7 +98,7 @@ class RREP_Packet(Packet):
         RREP_Packet.generate_new_id()
 
     def __repr__(self) -> str:
-       return f"RREP Packet ID: {self.id}\nSource: {self.src}\nDestination: {self.dest}\nHop Limit: {self.hop_limit}"
+       return f"RREP ID: {self.id}\nSource: {self.src}\nDestination: {self.dest}\nHop Limit: {self.hop_limit}"
 
     def get_src(self) -> int:
         return self.src
@@ -149,7 +149,7 @@ class Data_Packet(Packet):
     id_generator = 0
     def __init__(self, source: int, destination: int, ttl : int) -> None:
         self.src = source
-        self.dest - destination
+        self.dest = destination
         self.hop_limit = ttl
         self.id = Data_Packet.id_generator
         self.route = list()
@@ -207,7 +207,18 @@ if __name__ == "__main__":
     p3.decrease_hop()
     print(p3,"\n")
     print(p4.get_addresses())
-    p4.set_addressses([4,1,2,0])
+    p4.set_addresses([4,1,2,0])
     print(p4.get_addresses())
     p4.set_route([4,1,2,0])
-    print(p4.get_route())
+    print(p4.get_route(),"\n")
+
+    #TESTING Data_Packet class and its methods:
+    p5 = Data_Packet(0, 4, 50)
+    print(p5, "\n")
+    p6 = Data_Packet(2, 4, 50)
+    print(p6, "\n")
+    p5.decrease_hop()
+    print(p5, "\n")
+    print(p6.get_route())
+    p6.set_route([4, 6, 2, 1,0])
+    print(p6.get_route())
