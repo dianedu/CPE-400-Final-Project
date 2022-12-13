@@ -1,1 +1,9 @@
+For the CPE 400 final project, our group's project was on project idea 4: Dynamic routing mechanism design in faulty network
+The project we have created provides a simulation of routing and routing failures in an unstable environment using the DSR protocol,
+specifically focusing on its capabilities to cache routes and how the cached routes may not always provide a valid route in an unstable 
+environment.
 
+The simulation can be run in 'simulation.py'. The probability_of_link_failure field can be changed as needed (Range: 0 to 1).
+The graph can topology of the network can also be changed as needed, and a test_networks.txt file has a couple test scenarios already provided.
+The simulation outputs when packets are successfully transmitted, which links break, and also the numbers of successful packet and unsuccessful
+packet transmissions.

@@ -1,18 +1,24 @@
 # File with various network topologies for the simulation
 
-# TEST 1:
+    # TEST 1:
     adj_list1 = [[0,1,1,0,0],
                 [1,0,0,1,0],
                 [1,0,0,1,0],
                 [0,1,1,0,1],
                 [0,0,0,1,0]]
-    g1 = Graph(5, adj_list1)
+    g1 = Graph(5, adj_list1, probability_of_link_failure)
+    packet1 = RREQ_Packet(0, 4, 50)
+    g1.get_nodes()[0].get_packet(packet1)
+    cache_packet1 = RREQ_Packet(0, 4, 50)
+
+    for i in range(100):
+        g1.get_nodes()[0].get_packet(copy.deepcopy(cache_packet1))
+
+    print(f"\nSuccess: {get_num_successes()}, Failures: {get_num_failures()}, Prob link Failure: {probability_of_link_failure}")
     print(g1,"\n")
 
-    packet1 = RREQ_Packet(0, 4, 50)
-    g1.get_nodes()[0].get_packet(copy.deepcopy(packet1))
 
-# TEST 2:
+    # TEST 2:
     adj_list2 = [[0,1,1,0,0,0,0,0,0,0],
                     [1,0,0,0,1,0,0,0,0,0],
                     [1,0,0,1,0,0,0,0,0,0],
@@ -23,7 +29,15 @@
                     [0,0,0,0,0,1,0,0,0,1],
                     [0,0,0,0,0,0,1,0,0,1],
                     [0,0,0,0,0,0,0,1,1,0]]
-    g2 = Graph(10,adj_list2)
-    print(g2,"\n")
+    g2 = Graph(10, adj_list2, probability_of_link_failure)
+    
     packet2 = RREQ_Packet(1,9,50)
     g2.get_nodes()[1].get_packet(copy.deepcopy(packet2))
+    g2.get_nodes()[0].get_packet(packet2)
+    cache_packet2 = RREQ_Packet(1,9,50)
+
+    for i in range(100):
+        g2.get_nodes()[0].get_packet(copy.deepcopy(cache_packet2))
+
+    print(f"\nSuccess: {get_num_successes()}, Failures: {get_num_failures()}, Prob link Failure: {probability_of_link_failure}")
+    print(g2,"\n")

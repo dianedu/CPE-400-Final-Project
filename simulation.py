@@ -10,7 +10,7 @@ from node import *
 
 # main function for simluation
 if __name__ == "__main__":
-    probability_of_link_failure = 0.1
+    probability_of_link_failure = 0.5
 
     # TEST 1:
     adj_list1 = [[0,1,1,0,0],
@@ -22,6 +22,7 @@ if __name__ == "__main__":
     packet1 = RREQ_Packet(0, 4, 50)
     g1.get_nodes()[0].get_packet(packet1)
     cache_packet1 = RREQ_Packet(0, 4, 50)
+
     for i in range(100):
         g1.get_nodes()[0].get_packet(copy.deepcopy(cache_packet1))
 
