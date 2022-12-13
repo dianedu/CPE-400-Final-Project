@@ -44,7 +44,7 @@ class RREQ_Packet(Packet):
         self.SRC = source
         self.hop_limit = ttl
         self.id = RREQ_Packet.id_generator
-        self.target_address = target
+        self.dest = target
         self.addresses = []
         RREQ_Packet.generate_new_id()
 
@@ -71,8 +71,8 @@ class RREQ_Packet(Packet):
     def get_id(self) -> int:
         return self.id
 
-    def get_target_address(self) -> int:
-        return self.target_address
+    def get_dest(self) -> int:
+        return self.dest
 
     # method for nodes to add own address to path the packet has traversed
     def add_traversed_address(self, address: int) -> None:
@@ -144,6 +144,44 @@ class RREP_Packet(Packet):
 
 #     def get_opt(self) -> None:
 #         print("Error occurred in routing, path to destination does not exist") #temporary
+
+class Data_Packet(Packet):
+    id_generator = 0
+    def __init__(self, source: int, destination: int, ttl : int) -> None:
+        self.src = source
+        self.dest - destination
+        self.hop_limit = ttl
+        self.id = Data_Packet.id_generator
+        self.route = list()
+        Data_Packet.generate_new_id() 
+
+    def __repr__(self) -> str:
+        return f"Data Packet ID: {self.id}\nSource: {self.src}\nDestination: {self.dest}\nHop Limit: {self.hop_limit}"
+
+    def get_src(self) -> int:
+        return self.src
+    
+    def get_dest(self) -> int:
+        return self.dest
+    
+    def get_hop_limit(self) -> int:
+        return self.hop_limit
+
+    def decrease_hop(self) -> None:
+        self.hop_limit -= 1
+
+    def get_id(self) -> int:
+        return self.id
+
+    def get_route(self) -> list[int]:
+        return self.route
+
+    def set_route(self, route_to_take : list[int]) -> None:
+        self.route = route_to_take
+
+    @staticmethod
+    def generate_new_id() -> None:
+        Data_Packet.id_generator += 1
 
 # for testing purposes
 if __name__ == "__main__":

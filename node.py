@@ -50,6 +50,8 @@ class Node():
         if packet != None:
             # print(f"{self.label} has recieved packet {packet}\n")
             # print(f"\n{self.label} has recieved packet {packet.get_id()}")
+            if packet.get_dest() in self.cached_routes.keys():
+                packet = self.convert_RREQ_to_data_packet(copy.deepcopy(packet))
             self.process_packet(packet)
 
     def process_packet(self, packet: Packet) -> None:
@@ -68,12 +70,12 @@ class Node():
     def process_RREQ_packet(self, packet : RREQ_Packet) -> None:
         if packet != None:
             packet.decrease_hop()
-            if packet.get_target_address() == self.label:
+            if packet.get_dest() == self.label:
                 self.accept_RREQ_packet(packet)
             elif packet.get_hop_limit == 1:
                 self.discard_packet(packet)
             else:
-                packet_info = (packet.get_src(), packet.get_target_address())
+                packet_info = (packet.get_src(), packet.get_dest())
                 if self.is_in_rreq_table(packet_info, packet.get_id()):
                    self.discard_packet(packet)
                 else:
@@ -142,6 +144,9 @@ class Node():
         for node in self.adjacency_list:
             if label == node.get_label():
                 return node
+
+    def convert_RREQ_to_data_packet(self, packet : Packet) -> Packet:
+        pass
 
     # method to update dictionary of cached routes
         # recursively get route if successful?
