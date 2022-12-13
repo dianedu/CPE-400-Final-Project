@@ -50,8 +50,13 @@ class Node():
         if packet != None:
             # print(f"{self.label} has recieved packet {packet}\n")
             # print(f"\n{self.label} has recieved packet {packet.get_id()}")
-            if packet.get_dest() in self.cached_routes.keys():
-                packet = self.convert_RREQ_to_data_packet(copy.deepcopy(packet))
+            if type(packet) == RREQ_Packet:
+                if packet.get_dest() in self.cached_routes.keys():
+                    # print(f"Now testing route caching capabilities")
+                    packet = self.convert_RREQ_to_Data_packet(copy.deepcopy(packet))
+                    # print(f"Data Packet {packet}")
+                    packet.set_route(self.cached_routes[packet.get_dest()])
+                    # print(f"Data Packet route {packet.get_route()}")
             self.process_packet(packet)
 
     def process_packet(self, packet: Packet) -> None:
@@ -61,8 +66,10 @@ class Node():
         if type(packet) == RREQ_Packet:
             print(f"Packet of type RREQ is being process by {self.label}")
             self.process_RREQ_packet(packet)
-        if type(packet) == RREP_Packet:
+        elif type(packet) == RREP_Packet:
             self.process_RREP_packet(packet)
+        elif type(packet) == Data_Packet:
+            self.process_Data_packet(packet)
         # else:
         #     print(f"got here {type(packet)}")
         #     self.discard_packet(packet)
@@ -88,9 +95,9 @@ class Node():
         if not self.packet == packet:
             self.packet = packet
             print(f"{self.label} accepted packet {self.packet.get_id()}")
-            print(self.packet.get_traversed_addresses())
+            # print(self.packet.get_traversed_addresses())
             # might only do if it is a RREQ packet, oh wait..
-            print("Sending a RREP packet back\n")
+            print(f"{self.label} is sending a RREP packet back\n")
             rrep_packet = RREP_Packet(self.label, self.packet.get_src(), 50)
             # print(f"Traversed addresses: {self.packet.get_traversed_addresses()}")
             rrep_packet.set_addresses(copy.deepcopy(self.packet.get_traversed_addresses()))
@@ -138,6 +145,7 @@ class Node():
         print(f"{self.label} accepted RREP packet with id: {packet.get_id()}\n")
         # print(f"Packet src: {packet.get_src()} and the packet addresses {packet.get_addresses()}")
         packet.get_addresses().pop(0)
+        packet.get_addresses().append(packet.get_src())
         self.cached_routes[packet.get_src()] = packet.get_addresses()
 
     def get_neighbor_node_from_label(self, label : int):
@@ -145,7 +153,20 @@ class Node():
             if label == node.get_label():
                 return node
 
-    def convert_RREQ_to_data_packet(self, packet : Packet) -> Packet:
+    def convert_RREQ_to_Data_packet(self, packet : RREQ_Packet) -> Packet:
+        return Data_Packet(packet.get_src(), packet.get_dest(), packet.get_hop_limit())
+
+    def process_Data_packet(self, packet : Data_Packet) -> None:
+        print(f"{self.label} is processing Data Packet {packet.get_id()}")
+        if packet.get_dest() == self.label:
+            self.accept_Data_packet(packet)
+        else:
+            next_hop_router = packet.get_route().pop(0)
+            print(f"next hop router in data packet sending: {next_hop_router}")
+            self.get_neighbor_node_from_label(next_hop_router).get_packet(packet)
+
+    def accept_Data_packet(self, packet : Data_Packet) -> None:
+        print(f"{self.label} accepted Data Packet {packet.get_id()}")
         pass
 
     # method to update dictionary of cached routes

@@ -6,11 +6,11 @@
                 [1,0,0,1,0],
                 [0,1,1,0,1],
                 [0,0,0,1,0]]
-    g1 = Graph(5, adj_list)
+    g1 = Graph(5, adj_list1)
     print(g1,"\n")
 
     packet1 = RREQ_Packet(0, 4, 50)
-    g.get_nodes()[0].get_packet(copy.deepcopy(packet1))
+    g1.get_nodes()[0].get_packet(copy.deepcopy(packet1))
 
 # TEST 2:
     adj_list2 = [[0,1,1,0,0,0,0,0,0,0],

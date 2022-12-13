@@ -34,18 +34,18 @@ class Graph():
 
 # for ease of testing
 if __name__ == "__main__":
-    adj_list2 = [[0,1,1,0,0,0,0,0,0,0],
-                    [1,0,0,0,1,0,0,0,0,0],
-                    [1,0,0,1,0,0,0,0,0,0],
-                    [0,0,1,0,0,1,0,0,0,0],
-                    [0,1,0,0,0,1,0,0,0,0],
-                    [0,0,0,1,1,0,1,1,0,0],
-                    [0,0,0,0,0,1,0,0,1,0],
-                    [0,0,0,0,0,1,0,0,0,1],
-                    [0,0,0,0,0,0,1,0,0,1],
-                    [0,0,0,0,0,0,0,1,1,0]]
-    g2 = Graph(10,adj_list2)
-    print(g2,"\n")
-    packet2 = RREQ_Packet(1,9,50)
-    g2.get_nodes()[1].get_packet(copy.deepcopy(packet2))
-    # print(g2.get_nodes()[1].get_cached_route(9))
+# TEST 1:
+    adj_list1 = [[0,1,1,0,0],
+                [1,0,0,1,0],
+                [1,0,0,1,0],
+                [0,1,1,0,1],
+                [0,0,0,1,0]]
+    g1 = Graph(5, adj_list1)
+    print(g1,"\n")
+
+    packet1 = RREQ_Packet(0, 4, 50)
+    g1.get_nodes()[0].get_packet(packet1)
+    # print(g1.get_nodes()[0].get_cached_route(4))
+    print("\n")
+    cache_packet1 = RREQ_Packet(0, 4, 50)
+    g1.get_nodes()[0].get_packet(cache_packet1)
