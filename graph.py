@@ -48,3 +48,4 @@ if __name__ == "__main__":
     print(g2,"\n")
     packet2 = RREQ_Packet(1,9,50)
     g2.get_nodes()[1].get_packet(copy.deepcopy(packet2))
+    # print(g2.get_nodes()[1].get_cached_route(9))

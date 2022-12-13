@@ -118,7 +118,7 @@ class RREP_Packet(Packet):
     def get_addresses(self) -> list[int]:
         return self.addresses
 
-    def set_addressses(self, traversed_addressses : list[int]) -> None:
+    def set_addresses(self, traversed_addressses : list[int]) -> None:
         self.addresses = traversed_addressses
 
     def get_route(self) -> list[int]:

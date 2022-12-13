@@ -9,7 +9,7 @@ class Node():
         self.adjacency_list = [] # may make more sense to store as a set
         self.packet = None #might need to be a list -> queue of packets
         self.packets_received = dict()
-        # dictionary to hold cached routes to each destination router
+        self.cached_routes = dict()
 
     def __repr__(self) -> str:
         return f"{self.label}: {[n.get_label() for n in self.adjacency_list]}"
@@ -32,7 +32,7 @@ class Node():
 
     # TO DO: to be implemented once broadcasting works
     def get_cached_route(self, dest : int) -> list[int]:
-        pass
+        return self.cached_routes.get(dest)
 
     def broadcast_packet(self, packet : Packet) -> None:
         if packet != None:
@@ -91,8 +91,8 @@ class Node():
             print("Sending a RREP packet back\n")
             rrep_packet = RREP_Packet(self.label, self.packet.get_src(), 50)
             # print(f"Traversed addresses: {self.packet.get_traversed_addresses()}")
-            rrep_packet.set_addressses(self.packet.get_traversed_addresses())
-            rrep_packet.set_route(self.packet.get_traversed_addresses())
+            rrep_packet.set_addresses(copy.deepcopy(self.packet.get_traversed_addresses()))
+            rrep_packet.set_route(copy.deepcopy(self.packet.get_traversed_addresses()))
             self.send_RREP_packet(rrep_packet)
         # otherwise a duplicate
         else:
@@ -114,7 +114,8 @@ class Node():
         self.packets_received[p_info] = [p_id]
         return False
 
-    def send_RREP_packet(self, packet : Packet) -> None:
+    def send_RREP_packet(self, packet : RREP_Packet) -> None:
+        # print(f"TEST: {packet.get_addresses()}")
         destination = packet.get_route()[-1]
         # print(f"get specfic destination {destination}")
         # modified_route = packet.get_route().pop(-1)
@@ -131,9 +132,11 @@ class Node():
         else:
             self.send_RREP_packet(packet)
 
-    def accept_RREP_packet(self, packet : Packet):
+    def accept_RREP_packet(self, packet : RREP_Packet):
         print(f"{self.label} accepted RREP packet with id: {packet.get_id()}\n")
-        pass
+        # print(f"Packet src: {packet.get_src()} and the packet addresses {packet.get_addresses()}")
+        packet.get_addresses().pop(0)
+        self.cached_routes[packet.get_src()] = packet.get_addresses()
 
     def get_neighbor_node_from_label(self, label : int):
         for node in self.adjacency_list:
